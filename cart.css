@@ -178,11 +178,38 @@ nav{
 :popover-open{
     height: 80vh;
     width: 80vw;
-    background-color: red;
+    /* background-color: red; */
     justify-self: center;
     align-self: center;
+    position: relative;
 }
+#checkout-popover-container{
+    
+}
+.checkout-product{
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+    height: fit-content;
 
+}
+.checkout-product-img{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+.checkout-product-info{
+
+}
+.checkout-summary-panel{
+    position: absolute;
+    background-color: rgb(0, 0, 0, .3);
+}
+.buy-btn{
+    
+    bottom: .5rem;
+    right: .5rem;
+}
 /* PHONE */
 @media (max-width: 480px){
     :root{
@@ -215,4 +242,8 @@ nav{
         grid-template-columns: 1fr;
 
     }
+    .checkout-product{
+        flex-direction: column;
+    }
+   
 }

@@ -1,7 +1,7 @@
 import { saveCart, getCart } from "./storage.js";
 // testa spara något i catalog och sen clg här o se om den uppdateras
 let cart = getCart();
-// console.log(cart);
+console.log(cart);
 // cart.pop();
 // saveCart(cart);
 console.log(cart);
@@ -13,8 +13,8 @@ const cartElement = document.querySelector("#cartElement");
 const messageElement = document.querySelector("#message");
 const totalProductsElement = document.querySelector("#summary-quantity");
 const totalPriceElement = document.querySelector("#summary-price");
-const summaryBox = document.querySelector("#cart-info");
 const checkoutBtn = document.querySelector("#checkout-btn");
+const popoverContainer = document.querySelector("#checkout-popover-container");
 let totalPriceCart = 0;
 // RUN IT!
 totalProductsElement.textContent = cart.length;
@@ -30,7 +30,7 @@ cartElement.addEventListener("click", (e) =>{
     cartElementEvent(e.target);
 });
 checkoutBtn.addEventListener("click", () => {
-    createCheckoutPopover();
+    createPopover();
 })
 
 //FUNCTIONS
@@ -45,17 +45,17 @@ function cartElementEvent(target){
 function showMessage(message){
     messageElement.textContent = message;
 }
-async function getproducts(cart){
+async function getproducts(){
     //gör en lista vars längd är antalet av samma produkt. "quantityList"
     //gör en ny lista m.h.a. set så att varje produkt endast finns en gång "trimmedCart"
     //använder trimmedCart till korten och quantityList till siffran i varje kort
+    cart = getCart();
     const productList =[];
     const cartToSet = new Set(cart);
     const trimmedCart = [...cartToSet];
     
     for(const id of trimmedCart){
         const quantityList = cart.filter(productId => productId === id);
-        
        try{
         const response = await fetch(`https://dummyjson.com/products/${id}`)
         if(!response.ok){
@@ -75,7 +75,7 @@ async function getproducts(cart){
 }
 
 async function renderProducts(){
-    const productList = await getproducts(cart);
+    const productList = await getproducts();
     // console.log(productList)
     for(const product of productList){
         // console.log(product, product.quantity)
@@ -112,34 +112,21 @@ function createCard(product){
 }
 
 function updateQuantity(cardElement, product){
-    const quantityElement = cardElement.querySelector(".quantity")
+    const productQuantityCardElement = cardElement.querySelector(".quantity")
     const productTotalPriceElement = cardElement.querySelector(".product-total-price")
     cardElement.addEventListener("click", (e) =>{
        
         if(e.target.closest("#arrow-up")){
-            product.quantity++;
-            cart = getCart();
-            cart.push(product.id);
-            saveCart(cart);
-            quantityElement.textContent = product.quantity;
-            productTotalPriceElement.textContent = product.price * product.quantity;
-            totalPriceCart+= product.price;
-            totalPriceElement.textContent = totalPriceCart;
-            totalProductsElement.textContent = cart.length;
+            addProduct(product);
+            updateProductQuantity(product, productTotalPriceElement, productQuantityCardElement);
+            updateTotalCartInfo(e, product);
 
         }else if(e.target.closest("#arrow-down")){
-            product.quantity--;
             removeProduct(product);
-            // ta bort en produkt från cart och spara
-            console.log(product)
-            quantityElement.textContent = product.quantity;
-            productTotalPriceElement.textContent = product.price * product.quantity;
-            totalPriceCart-= product.price;
-            totalPriceElement.textContent = totalPriceCart;
-            cart = getCart();
-            totalProductsElement.textContent = cart.length;
+            updateProductQuantity(product, productTotalPriceElement, productQuantityCardElement);
+            updateTotalCartInfo(e, product);
             if(product.quantity === 0){
-                
+           
                 cardElement.remove();
                 //ATT GÖRA: ta bort från cart och skicka till browersminnet
 
@@ -149,43 +136,78 @@ function updateQuantity(cardElement, product){
     })
 }
 function removeProduct(product){
+    product.quantity--;
     cart = getCart();
     const removeIndex = cart.findIndex(item => item === product.id);
     cart.splice(removeIndex, 1);
     saveCart(cart);
+    console.log(cart)
+    cart = getCart()
+    console.log(cart)
 }
-async function createCheckoutPopover(){
-    let popoverElement = document.createElement("div");
-    popoverElement.innerHTML="";
-    popoverElement.popover = "auto"
-    popoverElement.id = "checkout-popover";
-    
-    popoverElement = await createCheckoutSummary(popoverElement)
-    // console.log(popoverElement)
-    summaryBox.appendChild(popoverElement)
-    
-}
-async function createCheckoutSummary(popoverElement){
+
+function addProduct(product){
+    product.quantity++;
     cart = getCart();
-    console.log(cart.length)
-    const productList = await getproducts(cart);
-    // console.log(productList)
-    for(const product of productList){
-        console.log(product.quantity)
-        const productElement = document.createElement("div");
-        productElement.innerHTML = `
-            <h2>${product.title}</h2>
-            <p>${product.price}</p>
-            <p>${product.price * product.quantity}</p>
-            <p>${product.quantity}</p>
-        `;
-        popoverElement.appendChild(productElement);
-        console.log(popoverElement)
-    }
-
-
-    return popoverElement
+    cart.push(product.id);
+    saveCart(cart);
 }
+function updateProductQuantity(product, productTotalPriceElement, quantityElement){
+    quantityElement.textContent = product.quantity;
+    productTotalPriceElement.textContent = product.price * product.quantity;
+}
+
+function updateTotalCartInfo(e, product){
+    console.log(e.target)
+    if(e.target.closest("#arrow-up")){
+        totalPriceCart+= product.price;
+        totalPriceElement.textContent = totalPriceCart;
+        totalProductsElement.textContent = cart.length;
+
+    }else if(e.target.closest("#arrow-down")){
+        totalPriceCart-= product.price;
+        totalPriceElement.textContent = totalPriceCart;
+        cart = getCart();
+        totalProductsElement.textContent = cart.length;
+    }
+}
+function createPopover(){
+    
+    popoverContainer.innerHTML = `
+        <div id="checkout-popover" popover>
+    `;
+    const popoverElement = popoverContainer.querySelector("#checkout-popover"); 
+    createCheckoutElements(popoverElement);
+    
+}
+async function createCheckoutElements(checkoutContainer){
+    const productList = await getproducts();
+
+    productList.forEach(product => {
+        const productElement = document.createElement("div");
+        productElement.classList.add("checkout-product");
+        productElement.innerHTML = `
+        <img class = "checkout-product-img" src= "${product.thumbnail}" alt= "picture of product">
+        <div class = "checkout-product-info">
+            <h3>${product.title}</h3>
+            <p>Amount ${product.quantity}</p>
+            <p>Price ${product.price}</p>
+            <p>Total price ${product.quantity * product.price}</p>
+        </div>
+        `;
+        checkoutContainer.appendChild(productElement);
+    });
+
+    const buyBtn = document.createElement("button");
+    buyBtn.textContent = "Purchase";
+    buyBtn.classList.add("buy-btn");
+    const checkoutSummaryPanel = document.createElement("div");
+    checkoutSummaryPanel.classList.add("checkout-summary-panel"); 
+    checkoutSummaryPanel.appendChild(buyBtn);
+    checkoutContainer.appendChild(checkoutSummaryPanel);
+    
+}
+
 
 
 
