@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
+    <script src="cart.js" defer type="module"></script>
+</head>
+<body>
+    <header>
+        <h1>Cart</h1>
+        <nav>
+            <div class = "desktop-menu">
+                <a  class = "menu-item" href = "index.html">Home</a>
+                <a  class = "menu-item" href = "catalog.html">Catalog</a>
+                <a  class = "menu-item" href = "favourites.html">Favourites</a>
+                <a  class = "menu-item current" href = "cart.html">Cart</a>
+                <a  class = "menu-item" href = "checkout.html">Checkout</a>
+            </div>
+
+            <div class="mobile-menu hidden">
+                <a class = "menu-item" href = "index.html">Home</a>
+                <a class = "menu-item" href = "catalog.html">Catalog</a>
+                <a class = "menu-item" href = "favourites.html">Favourites</a>
+                <a class = "menu-item current" href = "cart.html">Cart</a>
+                <a class = "menu-item" href = "checkout.html">Checkout</a>
+            </div>
+            <span id="hamburger-menu-icon"><i class="fa-solid fa-bars"></i></span>
+        </nav>
+    </header>
+    <main>
+        <p id="message"></p>
+        <div id="cartElement">
+
+            <div class="cart-card">
+
+                <img class = "product-img" src= "#" alt= "picture of product">
+               
+                <p class="product-description">
+                    blablabla bla bla blabla bl blabla b l a l b a b n b
+                    blablabla bla bla blabla bl blablablalba
+                    blablabla bla bla blabla bl blablablalba
+                    
+                </p>
+
+                <span class = "card-price-container">
+                    <div class="card-price">Price: 4645</div>
+                    <div class="card-quantity">
+                        <div class="arrow" id="arrow-up"><i class="fa-solid fa-caret-up"></i></div>
+                        <div>Quantity <span class="quantity">0</span></div>
+                        
+                        <div class="arrow" id="arrow-down"><i class="fa-solid fa-caret-down"></i></div>
+                    </div>
+                    <div class="card-price-total">Total: 4645</div>
+                </span>
+            </div>
+
+            <div class="cart-total-price"></div>
+        </div>
+        <div id="cart-info">
+            <div class="summary">
+                <div>Products <span id="summary-quantity">0</span></div>
+                <div>Total price <span id="summary-price">0</span></div>
+            </div>
+            <button id = "checkout-btn" >Go to checkout</button>
+            <!-- <div id="checkout-popover" popover>
+            <button id="buy">Buy</button>
+            </div> -->
+        </div>
+        
+    </main>
+
+    <main></main>
+</body>
+</html>

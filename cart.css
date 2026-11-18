@@ -1,0 +1,218 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+:root{
+    /* background-color: black; */
+    /* display: flex; */
+    scrollbar-width: thin;
+}
+/* HEADER */
+header{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    width: 100%;
+    align-items: center;
+    padding: 1rem 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    border-color: black;
+}
+header h1{
+    
+}
+#hamburger-menu-icon{
+    position: absolute;
+    display: none;
+    right: 1rem;
+    top: 2rem;
+    transform: translateY(-50%);
+}
+nav{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: fit-content;
+    background-color: rgb(0,0,0, .1);
+    border-bottom: 1px solid;
+}
+.desktop-menu{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+.mobile-menu{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.47);
+    border-top: 1px solid;
+    border-color: rgb(0, 0, 0, .2);
+    
+}
+.mobile-menu.hidden{
+    display: none;  
+}
+.menu-item{
+    color: black;
+    text-decoration: none;
+    padding: .25rem 1rem;
+    padding-bottom: 0;
+    width: fit-content;
+    text-align: center;
+    flex-grow: 1;
+}
+.menu-item:hover{
+    color: white;
+    background-color: rgb(0,0,0, .7);
+ }
+.menu-item.current{
+    color: white;
+    background-color: rgb(0,0,0);
+}
+
+
+/* MAIN */
+
+ #cartElement{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    min-width: 400px;
+    width: 80%;
+    max-width: 700px;
+    height: fit-content;
+    min-height: 60vh;
+    max-height: 80vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding: 1rem;
+    margin: 1rem auto;
+
+   background-color: rgb(0, 0, 0, .3);
+   border: 1px solid;
+   border-color: black;
+   border-radius: 5px;
+}
+.cart-card{
+    display: grid;
+    grid-template-areas: 
+    "productImg productDescription"
+    "cardPriceContainer cardPriceContainer";
+    grid-template-columns: 1fr 1fr;
+    justify-items: start;
+
+    min-width: 300px;
+    width: 100%;
+    max-width: 600px; 
+    height: fit-content;  
+
+    padding: .5rem 1rem;
+
+    background-color: rgb(0, 0, 0, .3);
+    border: 1px solid;
+    border-color: black;  
+    border-radius: 5px;
+}
+.cart-card *{
+    border: 1px solid black;
+}
+.product-img{
+    grid-area: productImg;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100%;
+    height: fit-content;
+    min-height: 150px;
+    padding: .5rem;
+    /* width: 150px;
+    height: 200px; */
+
+}
+.product-description{
+    grid-area: productDescription;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+
+    width: 100%;
+    height: 100%;
+
+    padding: .5rem 1rem;
+}
+.card-price-container{
+    grid-area: cardPriceContainer;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    
+}
+.card-quantity{
+    display: flex;
+}
+#cart-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    width: fit-content;
+    margin: 1rem auto;
+    padding: 1rem;
+    background-color: rgb(0, 0, 0, .3);
+    border: 1px solid;
+    border-color: rgb(0, 0, 0, .3);
+    border-radius: 3px;
+
+}
+.summary{
+    display: flex;
+    gap: 1rem;
+}
+
+:popover-open{
+    height: 80vh;
+    width: 80vw;
+    background-color: red;
+    justify-self: center;
+    align-self: center;
+}
+
+/* PHONE */
+@media (max-width: 480px){
+    :root{
+        scrollbar-width: none;
+    }
+    .desktop-menu{
+        display: none;
+    }
+    .menu-item{
+        width: 100%;
+    }
+    #hamburger-menu-icon{
+        display: block;
+    }
+    header{
+        border-bottom: 1px solid;
+    }
+    nav{
+        border-bottom: none;
+    }
+    #cartElement{
+        width: 95%;
+        scrollbar-width: none;
+    }
+    .cart-card{
+        grid-template-areas: 
+            "productImg"
+            "productDescription"
+            "cardPriceContainer";
+        grid-template-columns: 1fr;
+
+    }
+}
