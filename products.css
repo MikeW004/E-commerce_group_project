@@ -1,0 +1,309 @@
+/* ===============================
+1. CSS VARIABLES
+================================ */
+
+:root {
+/* Colors */
+--primary-color: #2563eb;
+--primary-hover: #1d4ed8;
+--background-color: #f8fafc;
+--card-color: #ffffff;
+--text-color: #1e293b;
+--muted-color: #64748b;
+
+/* Spacing */
+--spacing-sm: 10px;
+--spacing-md: 20px;
+--spacing-lg: 30px;
+
+/* Design */
+--border-radius: 12px;
+--card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+--max-width: 1200px;
+}
+
+/* ===============================
+2. GLOBAL STYLES
+================================ */
+
+* {
+box-sizing: border-box;
+}
+
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background-color: var(--background-color);
+color: var(--text-color);
+}
+
+/* ===============================
+3. PAGE LAYOUT
+================================ */
+
+.product-controls,
+.product-catalog,
+.product-detail-section {
+max-width: var(--max-width);
+margin: 0 auto;
+padding: var(--spacing-lg) var(--spacing-md);
+}
+
+/* ===============================
+4. SEARCH AND FILTER CONTROLS
+================================ */
+
+.product-controls input,
+.product-controls select {
+padding: 12px;
+border: 1px solid var(--muted-color);
+border-radius: var(--border-radius);
+font: inherit;
+background-color: var(--card-color);
+color: var(--text-color);
+max-width: 100%;
+}
+
+/* ===============================
+5. PRODUCT GRID
+================================ */
+
+.products-container {
+width: 100%;
+}
+
+#list-items {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: var(--spacing-md);
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+/* ===============================
+6. PRODUCT CARDS
+================================ */
+
+.product-card {
+display: flex;
+flex-direction: column;
+gap: var(--spacing-sm);
+height: 100%;
+
+background-color: var(--card-color);
+border-radius: var(--border-radius);
+padding: var(--spacing-md);
+box-shadow: var(--card-shadow);
+}
+
+.product-card img {
+display: block;
+width: 100%;
+height: 220px;
+object-fit: contain;
+}
+
+.product-card h3 {
+font-size: 1.1rem;
+margin: 0;
+}
+
+.product-card p {
+color: var(--primary-color);
+font-size: 1.2rem;
+font-weight: 700;
+margin: 0;
+}
+
+/* ===============================
+7. PRODUCT LINKS
+================================ */
+
+.product-card a {
+color: var(--primary-color);
+}
+
+.details-link {
+display: inline-block;
+margin-top: auto;
+padding: 12px 20px;
+
+background-color: var(--primary-color);
+color: white !important;
+
+border-radius: var(--border-radius);
+text-decoration: none;
+text-align: center;
+font-weight: 600;
+}
+
+.details-link:hover {
+background-color: var(--primary-hover);
+}
+
+/* ===============================
+8. PRODUCT DETAILS
+================================ */
+
+#product-details {
+max-width: var(--max-width);
+margin: var(--spacing-lg) auto;
+padding: var(--spacing-md);
+}
+
+#product-details article {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: var(--spacing-lg);
+align-items: center;
+
+background-color: var(--card-color);
+border-radius: var(--border-radius);
+padding: var(--spacing-lg);
+box-shadow: var(--card-shadow);
+}
+
+#product-details img {
+display: block;
+width: 100%;
+max-height: 450px;
+object-fit: contain;
+}
+
+/* ===============================
+9. PRODUCT INFORMATION
+================================ */
+
+.product-info {
+display: flex;
+flex-direction: column;
+gap: var(--spacing-md);
+min-width: 0;
+}
+
+.product-info h2 {
+font-size: 2rem;
+color: var(--text-color);
+margin: 0;
+}
+
+.product-info p {
+color: var(--muted-color);
+line-height: 1.6;
+margin: 0;
+}
+
+.product-info .product-price {
+color: var(--primary-color);
+font-size: 1.5rem;
+font-weight: 700;
+}
+
+/* Product action buttons */
+.add-to-cart,
+.favorite-button {
+min-height: 48px;
+padding: 12px 20px;
+border: 2px solid var(--primary-color);
+border-radius: var(--border-radius);
+font: inherit;
+font-weight: 600;
+cursor: pointer;
+transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.add-to-cart {
+background-color: var(--primary-color);
+color: white;
+}
+
+.add-to-cart:hover {
+background-color: var(--primary-hover);
+border-color: var(--primary-hover);
+}
+
+.favorite-button {
+background-color: var(--card-color);
+color: var(--primary-color);
+}
+
+.favorite-button:hover {
+background-color: var(--primary-color);
+color: white;
+}
+
+.add-to-cart:focus-visible,
+.favorite-button:focus-visible {
+outline: 3px solid var(--primary-hover);
+outline-offset: 3px;
+}
+
+/* ===============================
+10. BACK LINK
+================================ */
+
+.back-link {
+display: inline-block;
+color: var(--primary-color);
+text-decoration: none;
+margin-bottom: var(--spacing-md);
+}
+
+.back-link:hover {
+text-decoration: underline;
+}
+
+/* ===============================
+11. ACCESSIBILITY
+================================ */
+
+.details-link:focus-visible,
+.product-card a:focus-visible,
+.back-link:focus-visible,
+.product-controls input:focus-visible,
+.product-controls select:focus-visible {
+outline: 3px solid var(--primary-color);
+outline-offset: 3px;
+}
+
+/* ===============================
+12. TABLET
+================================ */
+
+@media (max-width: 900px) {
+#list-items {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+}
+
+/* ===============================
+13. PRODUCT DETAILS MOBILE
+================================ */
+
+@media (max-width: 768px) {
+#product-details article {
+grid-template-columns: 1fr;
+}
+
+.product-info h2 {
+font-size: 1.5rem;
+}
+}
+
+/* ===============================
+14. MOBILE
+================================ */
+
+@media (max-width: 600px) {
+#list-items {
+grid-template-columns: 1fr;
+}
+
+.product-controls,
+.product-catalog,
+.product-detail-section {
+padding: var(--spacing-md) var(--spacing-sm);
+}
+}
+
