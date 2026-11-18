@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="products.css">
+    <script src="products.js" defer></script>
+</head>
+<body>
+    <main id="main-content">
+        <!-- search filter and sort -->
+        <section class="product-controls">
+            <h1>Our products</h1>
+            <p>
+                Explore our collection and
+                the perfect products for you.
+            </p>
+              
+            <!-- Saerch -->
+            <form id="search-form" role="search">
+
+                <label for="search" >Search products</label>
+                <input type="search"
+                id="search"
+                name="search"
+                placeholder="search products">
+
+                <button type="submit">search</button>
+                
+            </form> 
+
+            <!-- Category Filter -->
+             <div class="filter-group">
+                <label for="Category-filter">
+                    Filter by categories
+                </label>
+                <select id="Category-filter">
+                    <option value="all">
+                    All categories
+                </option>
+                </select>
+             </div>
+
+             <!-- Sort products -->
+              <div class="sort-group">
+                <label>
+                    Sort by price
+                </label>
+
+                <select id="sort-product">
+                    <option value="low-high">
+                        price: Low to High
+                    </option>
+
+                    <option value="high-low">
+                        Price: High to Low
+                    </option>
+                </select>
+              </div>
+        </section>
+
+
+        <!-- Product catalog -->
+        <section class="product-catalog">
+            <h2>Available Products</h2>
+
+            <p class="loading-Message" role="status"></p>
+            <p class="error-Message"role="alert" ></p>
+            <p class="no-results"
+            role="status"
+            hidden
+            >No products found.</p>
+
+               <!-- Products form API -->
+            <div class="products-container">
+                <ul id="list-items"></ul>
+
+            </div>
+        </section>
+    </main>
+    
+</body>
+</html>

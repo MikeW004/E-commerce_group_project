@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f3ed">
+    <meta name="description" content="Se produkterna du har sparat som favoriter.">
+    <title>Favoriter — Form & Funktion</title>
+
+    <!-- Favoritsidan använder samma externa CSS som startsidan. -->
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/favorites.js"></script>
+  </head>
+
+  <body>
+    <!-- Hopplänken hjälper tangentbordsanvändare att nå innehållet direkt. -->
+    <a class="skip-link" href="#main-content">Hoppa till innehållet</a>
+
+    <!-- Delat sidhuvud med länkar till gruppens sidor. -->
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Form & Funktion, startsida">
+        <span class="brand-mark" aria-hidden="true">F.</span>
+        <span>form <span class="brand-amp">&</span> funktion</span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="primary-navigation"
+        aria-label="Öppna meny"
+      >
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Mobilmenyn öppnas och stängs av den gemensamma JavaScript-koden. -->
+      <nav class="main-nav" id="primary-navigation" aria-label="Huvudmeny">
+        <a href="index.html" data-nav="home">Hem</a>
+        <a href="products.html" data-nav="products">Alla produkter</a>
+        <a href="favorites.html" data-nav="favorites">
+          Favoriter <span class="nav-count" id="favorite-count">0</span>
+        </a>
+        <a href="cart.html" data-nav="cart">Varukorg</a>
+        <a href="admin.html" data-nav="admin">Hantera produkter</a>
+      </nav>
+    </header>
+
+    <!-- Favoritsidans huvudområde och tillgängliga statusmeddelanden. -->
+    <main id="main-content" tabindex="-1">
+      <div
+        id="status-message"
+        class="status-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      ></div>
+
+      <!-- Laddningsindikatorn visas medan produktinformationen hämtas. -->
+      <div
+        id="loading-message"
+        class="loading-message"
+        role="status"
+        aria-live="polite"
+        hidden
+      >
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="loading-text">Laddar produkter...</span>
+      </div>
+
+      <div id="page-content">
+        <!-- JavaScript visar sparade produktkort eller ett meddelande om listan är tom. -->
+        <section class="page-shell">
+          <div class="page-heading">
+            <p class="eyebrow">Dina sparade produkter</p>
+            <h1>Favoriter</h1>
+            <p>Här visas produkterna du har markerat som favoriter.</p>
+          </div>
+
+          <div class="product-grid" id="favorite-products"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Samma sidfot och gruppnavigation som på startsidan. -->
+    <footer class="site-footer">
+      <div class="footer-columns">
+        <div class="footer-about">
+          <a class="brand footer-brand" href="index.html">
+            <span class="brand-mark" aria-hidden="true">F.</span>
+            <span>form <span class="brand-amp">&</span> funktion</span>
+          </a>
+          <p>En enkel webbutik byggd som kursprojekt.</p>
+        </div>
+
+        <nav class="footer-links" aria-label="Butik">
+          <h2>Butik</h2>
+          <a href="index.html">Hem</a>
+          <a href="products.html">Alla produkter</a>
+          <a href="favorites.html">Favoriter</a>
+          <a href="cart.html">Varukorg</a>
+          <a href="admin.html">Hantera produkter</a>
+        </nav>
+
+        <div class="footer-contact">
+          <h2>Kontakt</h2>
+          <a href="mailto:support@form.function.se">support@form.function.se</a>
+          <a href="tel:+46712345678">071-234 56 78</a>
+        </div>
+
+        <div class="footer-info">
+          <h2>Information</h2>
+          <p>Produkterna laddas från en extern tjänst.</p>
+          <p>Dina favoriter sparas i webbläsaren.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 Form & Funktion</span>
+        <span>Skolprojekt – inga riktiga beställningar eller betalningar görs.</span>
+      </div>
+    </footer>
+  </body>
+</html>
