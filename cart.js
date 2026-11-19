@@ -1,4 +1,8 @@
 import { saveCart, getCart } from "./storage.js";
+import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
+
+setUpNavigation("cart");
+updateNavigationCounts();
 // testa spara något i catalog och sen clg här o se om den uppdateras
 let cart = getCart();
 console.log(cart);
@@ -7,8 +11,6 @@ console.log(cart);
 console.log(cart);
 //listan går nu mellan catalog.js och cart.js som den ska
 
-const menuIcon = document.querySelector("#hamburger-menu-icon");
-const mobileMenu = document.querySelector(".mobile-menu");
 const cartElement = document.querySelector("#cartElement");
 const messageElement = document.querySelector("#message");
 const totalProductsElement = document.querySelector("#summary-quantity");
@@ -19,11 +21,6 @@ let totalPriceCart = 0;
 // RUN IT!
 totalProductsElement.textContent = cart.length;
 renderProducts();
-menuIcon.addEventListener("click", (e) => {
-    if(e.target.matches("#hamburger-menu-icon") || e.target.matches(".fa-solid.fa-bars")){
-        mobileMenu.classList.toggle("hidden");
-    };
-});
 
 cartElement.addEventListener("click", (e) =>{
     // console.log(e.target);

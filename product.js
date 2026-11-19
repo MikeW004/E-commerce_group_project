@@ -88,3 +88,8 @@ productDetails.appendChild(article);
 
 fetchProduct();
 
+import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
+
+setUpNavigation("products");
+updateNavigationCounts();
+
