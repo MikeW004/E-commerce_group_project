@@ -4,7 +4,7 @@ export let cart = [];
 setUpNavigation("cart");
 updateNavigationCounts();
 // testa spara något i catalog och sen clg här o se om den uppdateras
-let cart = getCart();
+cart = getCart();
 console.log(cart);
 // cart.pop();
 // saveCart(cart);
