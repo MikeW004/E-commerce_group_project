@@ -1,6 +1,6 @@
 import { saveCart, getCart } from "./storage.js";
 import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
-
+export let cart = [];
 setUpNavigation("cart");
 updateNavigationCounts();
 // testa spara något i catalog och sen clg här o se om den uppdateras
