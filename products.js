@@ -1,6 +1,3 @@
-import { getFavorites, saveFavorites, setUpNavigation, updateNavigationCounts } from "./js/api.js";
-import { getCart, saveCart } from "./storage.js";
-
 const API_URL = "https://dummyjson.com/products?limit=0";
 
 const productList = document.querySelector("#list-items");
@@ -95,44 +92,9 @@ addToCartButton.dataset.productId = product.id;
 
 const favoriteButton = document.createElement("button");
 favoriteButton.type = "button";
+favoriteButton.textContent = "♡ Add to Favorites";
 favoriteButton.classList.add("favorite-button");
 favoriteButton.dataset.productId = product.id;
-
-const favorites = getFavorites();
-const isFavorite = favorites.includes(product.id);
-favoriteButton.textContent = isFavorite ? "♥ Ta bort favorit" : "♡ Lägg till favorit";
-favoriteButton.setAttribute("aria-pressed", String(isFavorite));
-
-addToCartButton.addEventListener("click", () => {
-const productId = Number(addToCartButton.dataset.productId);
-const cart = getCart();
-cart.push(productId);
-if (saveCart(cart)) {
-addToCartButton.textContent = "Tillagd i varukorg";
-addToCartButton.disabled = true;
-window.setTimeout(() => {
-addToCartButton.textContent = "Add to Cart";
-addToCartButton.disabled = false;
-}, 1200);
-} else {
-errorMessage.textContent = "Det gick inte att spara varukorgen.";
-}
-});
-
-favoriteButton.addEventListener("click", () => {
-const productId = Number(favoriteButton.dataset.productId);
-const savedFavorites = getFavorites();
-const alreadyFavorite = savedFavorites.includes(productId);
-const updatedFavorites = alreadyFavorite
-  ? savedFavorites.filter(id => id !== productId)
-  : [...savedFavorites, productId];
-
-if (saveFavorites(updatedFavorites)) {
-favoriteButton.setAttribute("aria-pressed", String(!alreadyFavorite));
-favoriteButton.textContent = alreadyFavorite ? "♡ Lägg till favorit" : "♥ Ta bort favorit";
-updateNavigationCounts();
-}
-});
 
 
 
@@ -147,8 +109,6 @@ article.appendChild(favoriteButton);
 li.appendChild(article);
 productList.appendChild(li);
 });
-
-updateNavigationCounts();
 }
 
 // ===============================
@@ -216,6 +176,8 @@ sortSelect.addEventListener("change", updateProducts);
 
 // Start
 fetchProducts();
+
+import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
 
 setUpNavigation("products");
 updateNavigationCounts();
