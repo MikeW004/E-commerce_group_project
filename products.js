@@ -177,3 +177,8 @@ sortSelect.addEventListener("change", updateProducts);
 // Start
 fetchProducts();
 
+import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
+
+setUpNavigation("products");
+updateNavigationCounts();
+

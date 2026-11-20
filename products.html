@@ -1,84 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products</title>
+    <meta name="theme-color" content="#f5f3ed">
+    <title>Produkter — Form & Funktion</title>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="products.css">
-    <script src="products.js" defer></script>
+    <script type="module" src="products.js"></script>
 </head>
 <body>
-    <main id="main-content">
+    <a class="skip-link" href="#main-content">Hoppa till innehållet</a>
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="Form & Funktion, startsida">
+            <span class="brand-mark" aria-hidden="true">F.</span>
+            <span>form <span class="brand-amp">&</span> funktion</span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Öppna meny">
+            <span></span><span></span>
+        </button>
+        <nav class="main-nav" id="primary-navigation" aria-label="Huvudmeny">
+            <a href="index.html" data-nav="home">Hem</a>
+            <a href="products.html" data-nav="products">Alla produkter</a>
+            <a href="favorites.html" data-nav="favorites">Favoriter <span class="nav-count" id="favorite-count">0</span></a>
+            <a href="cart.html" data-nav="cart">Varukorg</a>
+            <a href="admin.html" data-nav="admin">Hantera produkter</a>
+        </nav>
+    </header>
+    <main id="main-content" tabindex="-1">
         <!-- search filter and sort -->
-        <section class="product-controls">
-            <h1>Our products</h1>
-            <p>
-                Explore our collection and
-                the perfect products for you.
-            </p>
+        <section class="page-shell product-controls">
+            <div class="page-heading">
+                <p class="eyebrow">Vårt sortiment</p>
+                <h1>Alla produkter</h1>
+                <p>Utforska kollektionen och hitta något som passar dig.</p>
+            </div>
               
             <!-- Saerch -->
-            <form id="search-form" role="search">
-
-                <label for="search" >Search products</label>
-                <input type="search"
-                id="search"
-                name="search"
-                placeholder="search products">
-
-                <button type="submit">search</button>
-                
-            </form> 
-
-            <!-- Category Filter -->
-             <div class="filter-group">
-                <label for="Category-filter">
-                    Filter by categories
-                </label>
-                <select id="Category-filter">
-                    <option value="all">
-                    All categories
-                </option>
-                </select>
-             </div>
-
-             <!-- Sort products -->
-              <div class="sort-group">
-                <label>
-                    Sort by price
-                </label>
-
-                <select id="sort-product">
-                    <option value="low-high">
-                        price: Low to High
-                    </option>
-
-                    <option value="high-low">
-                        Price: High to Low
-                    </option>
-                </select>
-              </div>
+            <div class="toolbar">
+                <form id="search-form" role="search">
+                    <label class="visually-hidden" for="search">Sök produkter</label>
+                    <input class="field-control" type="search" id="search" name="search" placeholder="Sök produkter">
+                </form>
+                <div class="filter-group">
+                    <label class="visually-hidden" for="Category-filter">Filtrera efter kategori</label>
+                    <select class="field-control" id="Category-filter">
+                        <option value="all">Alla kategorier</option>
+                    </select>
+                </div>
+                <div class="sort-group">
+                    <label class="visually-hidden" for="sort-product">Sortera efter pris</label>
+                    <select class="field-control" id="sort-product">
+                        <option value="low-high">Pris: lågt till högt</option>
+                        <option value="high-low">Pris: högt till lågt</option>
+                    </select>
+                </div>
+            </div>
         </section>
 
 
         <!-- Product catalog -->
         <section class="product-catalog">
-            <h2>Available Products</h2>
+            <h2>Tillgängliga produkter</h2>
 
             <p class="loading-Message" role="status"></p>
             <p class="error-Message"role="alert" ></p>
-            <p class="no-results"
-            role="status"
-            hidden
-            >No products found.</p>
+            <p class="no-results" role="status" hidden>Inga produkter hittades.</p>
 
                <!-- Products form API -->
             <div class="products-container">
                 <ul id="list-items"></ul>
-
             </div>
         </section>
     </main>
-    
+    <footer class="site-footer">
+        <div class="footer-columns">
+            <div class="footer-about">
+                <a class="brand footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">F.</span><span>form <span class="brand-amp">&</span> funktion</span></a>
+                <p>En enkel webbutik byggd som kursprojekt.</p>
+            </div>
+            <nav class="footer-links" aria-label="Butik"><h2>Butik</h2><a href="index.html">Hem</a><a href="products.html">Alla produkter</a><a href="favorites.html">Favoriter</a><a href="cart.html">Varukorg</a><a href="admin.html">Hantera produkter</a></nav>
+            <div class="footer-contact"><h2>Kontakt</h2><a href="mailto:support@form.function.se">support@form.function.se</a><a href="tel:+46712345678">071-234 56 78</a></div>
+            <div class="footer-info"><h2>Information</h2><p>Produkterna laddas från en extern tjänst.</p><p>Dina favoriter sparas i webbläsaren.</p></div>
+        </div>
+        <div class="footer-bottom"><span>&copy; 2026 Form & Funktion</span><span>Skolprojekt – inga riktiga beställningar eller betalningar görs.</span></div>
+    </footer>
 </body>
 </html>

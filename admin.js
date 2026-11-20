@@ -1,4 +1,7 @@
+import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
 
+setUpNavigation("admin");
+updateNavigationCounts();
 
 const productList = document.querySelector("#product-list");
 const statusMessage = document.querySelector("#status");

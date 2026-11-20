@@ -1,0 +1,132 @@
+.cart-layout {
+  min-height: 55vh;
+}
+
+.cart-list {
+  min-width: 0;
+}
+
+.cart-card {
+  display: grid;
+  grid-template-columns: 94px minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-items: center;
+  padding: 1.2rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  border-radius: 0;
+}
+
+.cart-card * {
+  border: 0;
+}
+
+.product-img {
+  grid-column: 1;
+  width: 94px;
+  height: 108px;
+  object-fit: cover;
+  background: #e9e7df;
+}
+
+.product-description {
+  grid-column: 2;
+  margin: 0;
+  color: #616960;
+  line-height: 1.7;
+}
+
+.card-price-container {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: .5rem;
+  text-align: right;
+  font-weight: 700;
+}
+
+.card-quantity {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 500;
+}
+
+.arrow {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--white);
+  cursor: pointer;
+}
+
+.summary {
+  display: block;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+:popover-open {
+  width: min(680px, 90vw);
+  max-height: 80vh;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  background: var(--white);
+  color: var(--ink);
+}
+
+.checkout-product {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: .8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.checkout-product-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  background: #e9e7df;
+}
+
+.checkout-summary-panel {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.buy-btn {
+  min-height: 46px;
+  padding: .72rem 1.2rem;
+  border: 1px solid var(--green);
+  background: var(--green);
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .cart-card {
+    grid-template-columns: 70px minmax(0, 1fr);
+  }
+  .product-img {
+    width: 70px;
+    height: 84px;
+  }
+  .card-price-container {
+    grid-column: 2;
+    align-items: start;
+    text-align: left;
+  }
+}
