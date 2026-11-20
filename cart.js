@@ -96,7 +96,8 @@ async function renderProducts(){
 
 }
 function createCard(product){
-    const totalPrice = product.price * product.quantity
+    const totalPrice = (Math.round(product.price * 100) * product.quantity);
+    console.log(totalPrice)
     totalPriceCart += totalPrice;
     totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
     const cardElement = document.createElement("div");
@@ -113,9 +114,9 @@ function createCard(product){
                 <span class = "card-price-container">
                     <div class="card-price">Price ${product.price}</div>
                     <div class="card-quantity">
-                        <div class="arrow" id="arrow-up"><i class="fa-solid fa-caret-up"></i></div>
-                        <div>Quantity <span class="quantity">${product.quantity}</span></div>
-                        <div class="arrow" id="arrow-down"><i class="fa-solid fa-caret-down"></i></div>
+                        <div id="increase">+</div>
+                        <div><span class="quantity">${product.quantity}</span></div>
+                        <div id="decrease">-</div>
                     </div>
                     <div class="card-price-total">Total: <span class = "product-total-price">${totalPrice}</span> </div>
                 </span>
@@ -129,12 +130,12 @@ function updateQuantity(cardElement, product){
     const productTotalPriceElement = cardElement.querySelector(".product-total-price")
     cardElement.addEventListener("click", (e) =>{
        
-        if(e.target.closest("#arrow-up")){
+        if(e.target.closest("#increase")){
             addProduct(product);
             updateProductQuantity(product, productTotalPriceElement, productQuantityCardElement);
             updateTotalCartInfo(e, product);
 
-        }else if(e.target.closest("#arrow-down")){
+        }else if(e.target.closest("#decrease")){
             removeProduct(product);
             updateProductQuantity(product, productTotalPriceElement, productQuantityCardElement);
             updateTotalCartInfo(e, product);
@@ -167,19 +168,19 @@ function addProduct(product){
 }
 function updateProductQuantity(product, productTotalPriceElement, quantityElement){
     quantityElement.textContent = product.quantity;
-    productTotalPriceElement.textContent = product.price * product.quantity;
+    productTotalPriceElement.textContent = (product.price * product.quantity).toFixed(2);
 }
 
 function updateTotalCartInfo(e, product){
     console.log(e.target)
-    if(e.target.closest("#arrow-up")){
-        totalPriceCart+= product.price;
-        totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
+    if(e.target.closest("#increase")){
+        totalPriceCart+= Math.round(product.price * 100);
+        totalPriceElement.textContent = `${(totalPriceCart/100).toFixed(2)} US$`;
         totalProductsElement.textContent = cart.length;
 
-    }else if(e.target.closest("#arrow-down")){
-        totalPriceCart-= product.price;
-        totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
+    }else if(e.target.closest("#decrease")){
+        totalPriceCart-= Math.round(product.price * 100)
+        totalPriceElement.textContent = `${(totalPriceCart/100).toFixed(2)} US$`;
         cart = getCart();
         totalProductsElement.textContent = cart.length;
         if (cart.length === 0) {
