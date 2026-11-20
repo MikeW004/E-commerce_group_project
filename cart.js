@@ -41,6 +41,7 @@ function cartElementEvent(target){
 }
 function showMessage(message){
     messageElement.textContent = message;
+    messageElement.hidden = false;
 }
 async function getproducts(){
     //gör en lista vars längd är antalet av samma produkt. "quantityList"
@@ -72,7 +73,20 @@ async function getproducts(){
 }
 
 async function renderProducts(){
+    cartElement.innerHTML = "";
+    totalPriceCart = 0;
     const productList = await getproducts();
+    if (productList.length === 0) {
+        cartElement.innerHTML = `
+            <div class="empty-state">
+                <h2>Din varukorg är tom</h2>
+                <a class="button" href="products.html">Hitta produkter</a>
+            </div>
+        `;
+        totalPriceElement.textContent = "0";
+        totalProductsElement.textContent = "0";
+        return;
+    }
     // console.log(productList)
     for(const product of productList){
         // console.log(product, product.quantity)
@@ -84,15 +98,17 @@ async function renderProducts(){
 function createCard(product){
     const totalPrice = product.price * product.quantity
     totalPriceCart += totalPrice;
-    totalPriceElement.textContent = totalPriceCart;
+    totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
     const cardElement = document.createElement("div");
     cardElement.classList.add("cart-card");
     
     cardElement.innerHTML = `
-    <img class = "product-img" src= "${product.images[1]}" alt= "picture of product">
+    <a href="product.html?id=${product.id}" aria-label="Visa ${product.title}">
+        <img class="product-img" src="${product.thumbnail || product.images?.[0] || ""}" alt="${product.title}">
+    </a>
                
                 <p class="product-description">
-                ${product.description}
+                <strong>${product.title}</strong><br>${product.description}
                 </p>
                 <span class = "card-price-container">
                     <div class="card-price">Price ${product.price}</div>
@@ -158,20 +174,22 @@ function updateTotalCartInfo(e, product){
     console.log(e.target)
     if(e.target.closest("#arrow-up")){
         totalPriceCart+= product.price;
-        totalPriceElement.textContent = totalPriceCart;
+        totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
         totalProductsElement.textContent = cart.length;
 
     }else if(e.target.closest("#arrow-down")){
         totalPriceCart-= product.price;
-        totalPriceElement.textContent = totalPriceCart;
+        totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
         cart = getCart();
         totalProductsElement.textContent = cart.length;
+        if (cart.length === 0) {
+            totalPriceElement.textContent = "0";
+        }
     }
 }
 function createPopover(){
-    
     popoverContainer.innerHTML = `
-        <div id="checkout-popover" popover>
+        <div id="checkout-popover" popover></div>
     `;
     const popoverElement = popoverContainer.querySelector("#checkout-popover"); 
     createCheckoutElements(popoverElement);
@@ -198,6 +216,14 @@ async function createCheckoutElements(checkoutContainer){
     const buyBtn = document.createElement("button");
     buyBtn.textContent = "Purchase";
     buyBtn.classList.add("buy-btn");
+    buyBtn.addEventListener("click", () => {
+        saveCart([]);
+        cart = [];
+        checkoutContainer.hidePopover();
+        popoverContainer.innerHTML = "";
+        renderProducts();
+        showMessage("Tack! Demonstrationsköpet är klart.");
+    });
     const checkoutSummaryPanel = document.createElement("div");
     checkoutSummaryPanel.classList.add("checkout-summary-panel"); 
     checkoutSummaryPanel.appendChild(buyBtn);
