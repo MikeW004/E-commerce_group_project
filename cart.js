@@ -98,8 +98,8 @@ async function renderProducts(){
 function createCard(product){
     const totalPrice = (Math.round(product.price * 100) * product.quantity);
     console.log(totalPrice)
-    totalPriceCart += totalPrice;
-    totalPriceElement.textContent = `${totalPriceCart.toFixed(2)} US$`;
+    totalPriceCart += (totalPrice);
+    totalPriceElement.textContent = `${(totalPriceCart/100).toFixed(2)} US$`;
     const cardElement = document.createElement("div");
     cardElement.classList.add("cart-card");
     
@@ -118,7 +118,7 @@ function createCard(product){
                         <div><span class="quantity">${product.quantity}</span></div>
                         <div id="decrease">-</div>
                     </div>
-                    <div class="card-price-total">Total: <span class = "product-total-price">${totalPrice}</span> </div>
+                    <div class="card-price-total">Total: <span class = "product-total-price">${(totalPrice/100).toFixed(2)}</span> </div>
                 </span>
     `;
     updateQuantity(cardElement, product);
