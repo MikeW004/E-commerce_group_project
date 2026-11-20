@@ -3,7 +3,7 @@ body {
   color: var(--ink);
   font-family: var(--sans);
 }
-/* remove me pls */
+
 .admin-layout section {
   min-width: 0;
   margin: 0;
