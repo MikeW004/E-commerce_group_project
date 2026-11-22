@@ -1,14 +1,18 @@
-// Gemensamma funktioner som används på flera sidor.
+import {
+  getCart,
+  getStoredProducts,
+  hasStoredProducts,
+  saveCart,
+} from "../storage.js";
+
 export const API_URL = "https://dummyjson.com/products";
 
-// Favoriter sparas separat så de finns kvar efter omladdning och sidbyte.
 const STORAGE_KEYS = {
   favorites: "form-funktion-favorites",
 };
 
 let noticeTimer;
 
-// Läser en lista från localStorage och hanterar skadad eller otillgänglig data.
 export function readFromStorage(key) {
   let savedValue;
 
@@ -39,7 +43,6 @@ export function readFromStorage(key) {
   return savedData;
 }
 
-// Sparar en lista som JSON; false gör att anroparen kan avbryta vid fel.
 export function saveToStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -50,7 +53,6 @@ export function saveToStorage(key, value) {
   }
 }
 
-// Dessa två funktioner ger resten av projektet ett gemensamt favorit-API.
 export function getFavorites() {
   return readFromStorage(STORAGE_KEYS.favorites);
 }
@@ -59,7 +61,6 @@ export function saveFavorites(favorites) {
   return saveToStorage(STORAGE_KEYS.favorites, favorites);
 }
 
-// Visar ett tillfälligt meddelande och stänger det efter angiven tid.
 export function showNotice(message, type = "success", duration = 4500) {
   const notice = document.querySelector("#status-message");
 
@@ -77,7 +78,6 @@ export function showNotice(message, type = "success", duration = 4500) {
   }, duration);
 }
 
-// Visar laddningsindikatorn medan ett nätverksanrop pågår och döljer den efteråt.
 export async function fetchJson(url, options = {}, loadingMessage = "Laddar produkter...") {
   const loadingBox = document.querySelector("#loading-message");
   const loadingText = document.querySelector("#loading-text");
@@ -108,13 +108,15 @@ export async function fetchJson(url, options = {}, loadingMessage = "Laddar prod
   }
 }
 
-// Hämtar produktlistan som används på startsidan och favoritsidan.
 export async function getProducts() {
+  if (hasStoredProducts()) {
+    return getStoredProducts();
+  }
+
   const result = await fetchJson(`${API_URL}?limit=100`);
   return result.products;
 }
 
-// Gör text säker att lägga in i HTML som skapas från produktdata.
 export function escapeHtml(value = "") {
   const charactersToReplace = {
     "&": "&amp;",
@@ -129,7 +131,6 @@ export function escapeHtml(value = "") {
   });
 }
 
-// Formaterar priset med svensk talformatering och valutan amerikanska dollar.
 export function formatPrice(price) {
   return new Intl.NumberFormat("sv-SE", {
     style: "currency",
@@ -137,12 +138,10 @@ export function formatPrice(price) {
   }).format(price);
 }
 
-// Väljer produktens miniatyrbild, eller första bilden som reserv.
 export function getProductImage(product) {
   return product.thumbnail || product.images?.[0] || "";
 }
 
-// Bygger ett produktkort med länk till detaljsidan och en favoritknapp.
 export function createProductCard(product, favorites = getFavorites()) {
   const isFavorite = favorites.includes(product.id);
   const favoriteText = isFavorite ? "Ta bort från" : "Lägg till i";
@@ -186,11 +185,19 @@ export function createProductCard(product, favorites = getFavorites()) {
         </span>
       </div>
 
+      <div class="card-actions">
+        <button
+          class="button small"
+          type="button"
+          data-action="add-to-cart"
+          data-id="${product.id}"
+          aria-label="Lägg ${escapeHtml(product.title)} i varukorgen"
+        >Lägg i varukorgen</button>
+      </div>
     </article>
   `;
 }
 
-// Ersätter sidinnehållet med ett felmeddelande och en knapp för omladdning.
 export function showPageError(error) {
   const pageContent = document.querySelector("#page-content");
 
@@ -217,7 +224,6 @@ export function showPageError(error) {
   });
 }
 
-// Markerar aktuell sida och kopplar hamburgermenyns öppna/stäng-beteende.
 export function setUpNavigation(activePage) {
   const navigationLinks = document.querySelectorAll("[data-nav]");
 
@@ -237,8 +243,7 @@ export function setUpNavigation(activePage) {
   }
 
   menuButton.addEventListener("click", () => {
-    const menuIsOpen = menuButton.getAttribute("aria-expanded") === "true";
-    const shouldOpenMenu = !menuIsOpen;
+    const shouldOpenMenu = menuButton.getAttribute("aria-expanded") !== "true";
 
     menuButton.setAttribute("aria-expanded", String(shouldOpenMenu));
     menuButton.setAttribute(
@@ -259,7 +264,6 @@ export function setUpNavigation(activePage) {
   });
 }
 
-// Uppdaterar favoritantalet i navigationen från localStorage.
 export function updateNavigationCounts() {
   const favoriteCount = document.querySelector("#favorite-count");
 
@@ -268,18 +272,36 @@ export function updateNavigationCounts() {
   }
 }
 
-// En gemensam klicklyssnare hanterar favoritknappar även efter att korten ritats om.
 export function setUpProductButtons(products, afterFavoriteChange) {
   document.addEventListener("click", (event) => {
+    const cartButton = event.target.closest('[data-action="add-to-cart"]');
+
+    if (cartButton) {
+      const product = products.find((item) => String(item.id) === cartButton.dataset.id);
+
+      if (!product) {
+        showNotice("Produkten hittades inte. Ladda om sidan och försök igen.", "error");
+        return;
+      }
+
+      try {
+        saveCart([...getCart(), product.id]);
+        showNotice("Produkten har lagts till i varukorgen.");
+      } catch (error) {
+        console.error(error);
+        showNotice("Det gick inte att lägga till produkten i varukorgen.", "error");
+      }
+
+      return;
+    }
+
     const button = event.target.closest('[data-action="favorite"]');
 
     if (!button) {
       return;
     }
 
-    const product = products.find((item) => {
-      return String(item.id) === button.dataset.id;
-    });
+    const product = products.find((item) => String(item.id) === button.dataset.id);
 
     if (!product) {
       showNotice("Produkten hittades inte. Ladda om sidan och försök igen.", "error");
@@ -290,31 +312,23 @@ export function setUpProductButtons(products, afterFavoriteChange) {
   });
 }
 
-// Lägger till eller tar bort produkten, sparar resultatet och uppdaterar sidan.
 function changeFavorite(product, afterFavoriteChange) {
   const currentFavorites = getFavorites();
   const isAlreadyFavorite = currentFavorites.includes(product.id);
-  let updatedFavorites;
-
-  // Skapa en ny lista utan produkten, eller lägg till dess ID.
-  if (isAlreadyFavorite) {
-    updatedFavorites = currentFavorites.filter((id) => id !== product.id);
-  } else {
-    updatedFavorites = [...currentFavorites, product.id];
-  }
+  const updatedFavorites = isAlreadyFavorite
+    ? currentFavorites.filter((id) => id !== product.id)
+    : [...currentFavorites, product.id];
 
   if (!saveFavorites(updatedFavorites)) {
     return;
   }
 
-  // Uppdatera räknaren och visa besked först efter att lagringen lyckats.
   updateNavigationCounts();
-
-  if (isAlreadyFavorite) {
-    showNotice("Produkten har tagits bort från favoriterna.");
-  } else {
-    showNotice("Produkten har sparats som favorit.");
-  }
+  showNotice(
+    isAlreadyFavorite
+      ? "Produkten har tagits bort från favoriterna."
+      : "Produkten har sparats som favorit.",
+  );
 
   if (afterFavoriteChange) {
     afterFavoriteChange();

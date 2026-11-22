@@ -1,56 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
+    <meta name="theme-color" content="#f5f3ed">
+    <title>Varukorg — Form & Funktion</title>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="cart.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css">
     <script src="cart.js" defer type="module"></script>
 </head>
 <body>
-    <header>
-        <h1>Cart</h1>
-        <nav>
-            <div class = "desktop-menu">
-                <a  class = "menu-item" href = "index.html">Home</a>
-                <a  class = "menu-item" href = "catalog.html">Catalog</a>
-                <a  class = "menu-item" href = "favourites.html">Favourites</a>
-                <a  class = "menu-item current" href = "cart.html">Cart</a>
-                <a  class = "menu-item" href = "checkout.html">Checkout</a>
-            </div>
-
-            <div class="mobile-menu hidden">
-                <a class = "menu-item" href = "index.html">Home</a>
-                <a class = "menu-item" href = "catalog.html">Catalog</a>
-                <a class = "menu-item" href = "favourites.html">Favourites</a>
-                <a class = "menu-item current" href = "cart.html">Cart</a>
-                <a class = "menu-item" href = "checkout.html">Checkout</a>
-            </div>
-            <span id="hamburger-menu-icon"><i class="fa-solid fa-bars"></i></span>
+    <a class="skip-link" href="#main-content">Hoppa till innehållet</a>
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="Form & Funktion, startsida"><span class="brand-mark" aria-hidden="true">F.</span><span>form <span class="brand-amp">&</span> funktion</span></a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Öppna meny"><span></span><span></span></button>
+        <nav class="main-nav" id="primary-navigation" aria-label="Huvudmeny">
+            <a href="index.html" data-nav="home">Hem</a>
+            <a href="products.html" data-nav="products">Alla produkter</a>
+            <a href="favorites.html" data-nav="favorites">Favoriter <span class="nav-count" id="favorite-count">0</span></a>
+            <a href="cart.html" data-nav="cart">Varukorg</a>
+            <a href="admin.html" data-nav="admin">Hantera produkter</a>
         </nav>
     </header>
-    <main>
-        <p id="message"></p>
-        <div id="cartElement">
-
+    <main id="main-content" tabindex="-1" class="page-shell">
+        <div class="page-heading">
+            <p class="eyebrow">Dina valda produkter</p>
+            <h1>Varukorg</h1>
         </div>
-        <div id="cart-info">
-            <div class="summary">
-                <div>Products <span id="summary-quantity">0</span></div>
-                <div>Total price <span id="summary-price">0</span></div>
-            </div>
-            <button id = "checkout-btn" popovertarget="checkout-popover">Go to checkout</button>
-            <div id="checkout-popover-container">
-                <!-- <div id="checkout-popover" popover="auto">
-                <button id="buy">Buy</button>
-            </div> -->
-            
+        <p id="message" class="status-message" hidden></p>
+        <div class="cart-layout">
+            <div id="cartElement" class="cart-list"></div>
+            <div id="cart-info" class="summary-card">
+                <h2>Ordersammanfattning</h2>
+                <div class="summary">
+                    <div class="summary-line"><span>Produkter</span><span id="summary-quantity">0</span></div>
+                    <div class="summary-line summary-total"><span>Totalt</span><span id="summary-price">0</span></div>
+                </div>
+                <button class="button" id="checkout-btn" popovertarget="checkout-popover">Gå till kassan</button>
+                <p class="checkout-note">Beställningar görs endast som en demonstration.</p>
+                <div id="checkout-popover-container"></div>
             </div>
         </div>
-        
     </main>
-
-    <main></main>
+    <footer class="site-footer">
+        <div class="footer-columns">
+            <div class="footer-about"><a class="brand footer-brand" href="index.html"><span class="brand-mark" aria-hidden="true">F.</span><span>form <span class="brand-amp">&</span> funktion</span></a><p>En enkel webbutik byggd som kursprojekt.</p></div>
+            <nav class="footer-links" aria-label="Butik"><h2>Butik</h2><a href="index.html">Hem</a><a href="products.html">Alla produkter</a><a href="favorites.html">Favoriter</a><a href="cart.html">Varukorg</a><a href="admin.html">Hantera produkter</a></nav>
+            <div class="footer-contact"><h2>Kontakt</h2><a href="mailto:support@form.function.se">support@form.function.se</a><a href="tel:+46712345678">071-234 56 78</a></div>
+            <div class="footer-info"><h2>Information</h2><p>Produkterna laddas från en extern tjänst.</p><p>Din varukorg sparas i webbläsaren.</p></div>
+        </div>
+        <div class="footer-bottom"><span>&copy; 2026 Form & Funktion</span><span>Skolprojekt – inga riktiga beställningar eller betalningar görs.</span></div>
+    </footer>
 </body>
 </html>
