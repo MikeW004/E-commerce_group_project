@@ -113,7 +113,7 @@ export async function getProducts() {
     return getStoredProducts();
   }
 
-  const result = await fetchJson(`${API_URL}?limit=0`);
+  const result = await fetchJson(`${API_URL}?limit=100`);
   return result.products;
 }
 

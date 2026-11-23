@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { getStoredProducts } from "./storage.js";
 import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
-=======
-import { getFavorites, saveFavorites, setUpNavigation, updateNavigationCounts } from "./js/api.js";
-import { getCart, saveCart } from "./storage.js";
->>>>>>> 1823270f266dc46be4ea0af36d6f80a9b8cbea50
 
 const productDetails = document.querySelector("#product-details");
 const API_URL = "https://dummyjson.com/products";
@@ -70,7 +65,6 @@ function renderProduct(product) {
   const description = document.createElement("p");
   description.textContent = product.description;
 
-<<<<<<< HEAD
   productInfo.append(title, category, description, price);
   article.append(image, productInfo);
   productDetails.appendChild(article);
@@ -79,68 +73,3 @@ function renderProduct(product) {
 fetchProduct();
 setUpNavigation("products");
 updateNavigationCounts();
-=======
-title.textContent = product.title;
-
-// ===============================
-// 3. APPEND ELEMENTS
-// ===============================
-
-productInfo.appendChild(title);
-productInfo.appendChild(category);
-productInfo.appendChild(description);
-productInfo.appendChild(price);
-
-article.appendChild(image);
-article.appendChild(productInfo);
-
-const actions = document.createElement("div");
-actions.classList.add("product-actions");
-
-const addToCartButton = document.createElement("button");
-addToCartButton.type = "button";
-addToCartButton.className = "button";
-addToCartButton.textContent = "Lägg i varukorg";
-
-const favoriteButton = document.createElement("button");
-favoriteButton.type = "button";
-favoriteButton.className = "favorite-button";
-const isFavorite = getFavorites().includes(product.id);
-favoriteButton.textContent = isFavorite ? "♥ Ta bort favorit" : "♡ Lägg till favorit";
-favoriteButton.setAttribute("aria-pressed", String(isFavorite));
-
-addToCartButton.addEventListener("click", () => {
-let cart = getCart();
-cart.push(product.id);
-if (saveCart(cart)) {
-addToCartButton.textContent = "Tillagd i varukorg";
-} else {
-errorMessage.textContent = "Det gick inte att spara varukorgen.";
-}
-});
-
-favoriteButton.addEventListener("click", () => {
-const favorites = getFavorites();
-const alreadyFavorite = favorites.includes(product.id);
-const updated = alreadyFavorite
-  ? favorites.filter(id => id !== product.id)
-  : [...favorites, product.id];
-if (saveFavorites(updated)) {
-favoriteButton.textContent = alreadyFavorite ? "♡ Lägg till favorit" : "♥ Ta bort favorit";
-favoriteButton.setAttribute("aria-pressed", String(!alreadyFavorite));
-updateNavigationCounts();
-}
-});
-
-actions.append(addToCartButton, favoriteButton);
-article.appendChild(actions);
-
-productDetails.appendChild(article);
-}
-
-fetchProduct();
-
-setUpNavigation("products");
-updateNavigationCounts();
-
->>>>>>> 1823270f266dc46be4ea0af36d6f80a9b8cbea50

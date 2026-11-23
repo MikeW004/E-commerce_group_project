@@ -10,7 +10,25 @@
     <script type="module" src="products.js"></script>
 </head>
 <body>
-    <main id="main-content">
+    <a class="skip-link" href="#main-content">Hoppa till innehållet</a>
+    <header class="site-header">
+        <a class="brand" href="index.html" aria-label="Form & Funktion, startsida">
+            <span class="brand-mark" aria-hidden="true">F.</span>
+            <span>form <span class="brand-amp">&</span> funktion</span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Öppna meny">
+            <span></span><span></span>
+        </button>
+        <nav class="main-nav" id="primary-navigation" aria-label="Huvudmeny">
+            <a href="index.html" data-nav="home">Hem</a>
+            <a href="products.html" data-nav="products">Alla produkter</a>
+            <a href="favorites.html" data-nav="favorites">Favoriter <span class="nav-count" id="favorite-count">0</span></a>
+            <a href="cart.html" data-nav="cart">Varukorg</a>
+            <a href="admin.html" data-nav="admin">Hantera produkter</a>
+        </nav>
+    </header>
+    <main id="main-content" tabindex="-1">
+        <div id="status-message" class="status-message" role="status" aria-live="polite" hidden></div>
         <!-- search filter and sort -->
         <section class="page-shell product-controls">
             <div class="page-heading">

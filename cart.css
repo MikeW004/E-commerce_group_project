@@ -56,7 +56,7 @@
   font-weight: 500;
 }
 
-#increase, #decrease{
+.arrow {
   display: grid;
   width: 28px;
   height: 28px;
