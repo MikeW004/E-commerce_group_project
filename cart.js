@@ -61,6 +61,21 @@ async function getCartProducts() {
   return products;
 }
 
+
+let messageTimeout;
+
+function showMessage(message) {
+  clearTimeout(messageTimeout);
+
+  messageElement.textContent = message;
+  messageElement.hidden = false;
+
+  messageTimeout = setTimeout(() => {
+    messageElement.hidden = true;
+  }, 3000);
+}
+
+
 //tar varje produkt från produktlista, skapar ett kort och lägger till html
 async function renderCart() {
   cartElement.innerHTML = "";
