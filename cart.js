@@ -1,4 +1,4 @@
-import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
+import { formatPrice, setUpNavigation, updateNavigationCounts } from "./js/api.js";
 import { getCart, getStoredProducts, saveCart } from "./storage.js";
 
 setUpNavigation("cart");
@@ -14,26 +14,16 @@ const totalPriceElement = document.querySelector("#summary-price");
 const checkoutButton = document.querySelector("#checkout-btn");
 const popoverContainer = document.querySelector("#checkout-popover-container");
 
-totalProductsElement.textContent = cart.length;
-renderCart();
-
-checkoutButton.addEventListener("click", createPopover);
-
-function showMessage(message) {
-  messageElement.textContent = message;
-}
-
 async function getCartProducts() {
   cart = getCart();
-
   const products = [];
-  const uniqueProductIds = [...new Set(cart)];
   const storedProducts = getStoredProducts();
+  const uniqueProductIds = [...new Set(cart.map((id) => String(id)))];
 
   for (const id of uniqueProductIds) {
-    const quantity = cart.filter((productId) => productId === id).length;
+    const quantity = cart.filter((productId) => String(productId) === id).length;
     const storedProduct = storedProducts.find(
-      (product) => String(product.id) === String(id),
+      (product) => String(product.id) === id,
     );
 
     if (storedProduct) {
@@ -43,34 +33,54 @@ async function getCartProducts() {
 
     try {
       const response = await fetch(`https://dummyjson.com/products/${id}`);
-
       if (!response.ok) {
-        throw new Error(response.status);
+        throw new Error(`Produkt kunde inte laddas (${response.status})`);
       }
-
       const product = await response.json();
       products.push({ ...product, quantity });
     } catch (error) {
       console.error(error);
-      showMessage("failed to fetch product");
+      showMessage("En produkt i varukorgen kunde inte laddas.");
     }
   }
 
   return products;
 }
 
-async function renderCart() {
-  const products = await getCartProducts();
+function showMessage(message) {
+  messageElement.textContent = message;
+  messageElement.hidden = false;
+}
 
+async function renderCart() {
+  cartElement.innerHTML = "";
+  totalCartPrice = 0;
+  cart = getCart();
+
+  if (cart.length === 0) {
+    cartElement.innerHTML = `
+      <div class="empty-state">
+        <h2>Din varukorg är tom</h2>
+        <a class="button" href="products.html">Hitta produkter</a>
+      </div>
+    `;
+    totalPriceElement.textContent = formatPrice(0);
+    totalProductsElement.textContent = "0";
+    return;
+  }
+
+  const products = await getCartProducts();
   products.forEach((product) => {
     cartElement.appendChild(createCartCard(product));
   });
+
+  totalProductsElement.textContent = String(cart.length);
+  totalPriceElement.textContent = formatPrice(totalCartPrice);
 }
 
 function createCartCard(product) {
   const productTotal = product.price * product.quantity;
   totalCartPrice += productTotal;
-  totalPriceElement.textContent = totalCartPrice;
 
   const cardElement = document.createElement("div");
   cardElement.classList.add("cart-card");
@@ -78,18 +88,18 @@ function createCartCard(product) {
     <img
       class="product-img"
       src="${product.images?.[1] || product.thumbnail || ""}"
-      alt="picture of product"
+      alt="${product.title || "Produkt"}"
     >
-    <p class="product-description">${product.description}</p>
+    <p class="product-description">${product.description || ""}</p>
     <span class="card-price-container">
-      <div class="card-price">Price ${product.price}</div>
+      <div class="card-price">Pris ${formatPrice(product.price)}</div>
       <div class="card-quantity">
-        <div class="arrow" id="arrow-up"><i class="fa-solid fa-caret-up"></i></div>
-        <div>Quantity <span class="quantity">${product.quantity}</span></div>
-        <div class="arrow" id="arrow-down"><i class="fa-solid fa-caret-down"></i></div>
+        <button class="arrow" id="arrow-up" type="button" aria-label="Öka antal">+</button>
+        <div>Antal <span class="quantity">${product.quantity}</span></div>
+        <button class="arrow" id="arrow-down" type="button" aria-label="Minska antal">−</button>
       </div>
       <div class="card-price-total">
-        Total: <span class="product-total-price">${productTotal}</span>
+        Totalt: <span class="product-total-price">${formatPrice(productTotal)}</span>
       </div>
     </span>
   `;
@@ -104,93 +114,117 @@ function attachQuantityControls(cardElement, product) {
 
   cardElement.addEventListener("click", (event) => {
     if (event.target.closest("#arrow-up")) {
-      addProduct(product);
-      updateProductQuantity(product, productTotalElement, quantityElement);
-      updateCartSummary(event, product);
+      cart.push(product.id);
+      product.quantity++;
     } else if (event.target.closest("#arrow-down")) {
-      removeProduct(product);
-      updateProductQuantity(product, productTotalElement, quantityElement);
-      updateCartSummary(event, product);
-
-      if (product.quantity === 0) {
-        cardElement.remove();
+      const productIndex = cart.findIndex(
+        (item) => String(item) === String(product.id),
+      );
+      if (productIndex === -1) {
+        return;
       }
+      cart.splice(productIndex, 1);
+      product.quantity--;
+    } else {
+      return;
     }
+
+    saveCart(cart);
+    quantityElement.textContent = String(product.quantity);
+    productTotalElement.textContent = formatPrice(product.price * product.quantity);
+
+    if (product.quantity === 0) {
+      cardElement.remove();
+    }
+
+    renderSummary();
   });
 }
 
-function removeProduct(product) {
-  product.quantity--;
+function renderSummary() {
   cart = getCart();
+  totalCartPrice = 0;
 
-  const productIndex = cart.findIndex((item) => item === product.id);
-  cart.splice(productIndex, 1);
-  saveCart(cart);
-  cart = getCart();
+  cartElement.querySelectorAll(".cart-card").forEach((card) => {
+    const quantity = Number(card.querySelector(".quantity")?.textContent || 0);
+    const totalText = card.querySelector(".card-price")?.textContent || "";
+    void quantity;
+    void totalText;
+  });
+
+  getCartProducts().then((products) => {
+    totalCartPrice = products.reduce(
+      (sum, product) => sum + product.price * product.quantity,
+      0,
+    );
+    totalPriceElement.textContent = formatPrice(totalCartPrice);
+    totalProductsElement.textContent = String(cart.length);
+  });
 }
 
-function addProduct(product) {
-  product.quantity++;
-  cart = getCart();
-  cart.push(product.id);
-  saveCart(cart);
-}
-
-function updateProductQuantity(product, productTotalElement, quantityElement) {
-  quantityElement.textContent = product.quantity;
-  productTotalElement.textContent = product.price * product.quantity;
-}
-
-function updateCartSummary(event, product) {
-  if (event.target.closest("#arrow-up")) {
-    totalCartPrice += product.price;
-    totalPriceElement.textContent = totalCartPrice;
-    totalProductsElement.textContent = cart.length;
-  } else if (event.target.closest("#arrow-down")) {
-    totalCartPrice -= product.price;
-    totalPriceElement.textContent = totalCartPrice;
-    cart = getCart();
-    totalProductsElement.textContent = cart.length;
+async function createPopover() {
+  if (getCart().length === 0) {
+    showMessage("Din varukorg är tom.");
+    return;
   }
-}
 
-function createPopover() {
   popoverContainer.innerHTML = `
-    <div id="checkout-popover" popover>
+    <div id="checkout-popover" popover></div>
   `;
 
   const popoverElement = popoverContainer.querySelector("#checkout-popover");
-  renderCheckoutProducts(popoverElement);
+  try {
+    await renderCheckoutProducts(popoverElement);
+    popoverElement.showPopover();
+  } catch (error) {
+    console.error(error);
+    showMessage("Kunde inte öppna kassan. Försök igen.");
+  }
 }
 
 async function renderCheckoutProducts(checkoutContainer) {
   const products = await getCartProducts();
 
+  checkoutContainer.innerHTML = "";
   products.forEach((product) => {
     const productElement = document.createElement("div");
     productElement.classList.add("checkout-product");
     productElement.innerHTML = `
       <img
         class="checkout-product-img"
-        src="${product.thumbnail}"
-        alt="picture of product"
+        src="${product.thumbnail || product.images?.[0] || ""}"
+        alt="${product.title || "Produkt"}"
       >
       <div class="checkout-product-info">
-        <h3>${product.title}</h3>
-        <p>Amount ${product.quantity}</p>
-        <p>Price ${product.price}</p>
-        <p>Total price ${product.quantity * product.price}</p>
+        <h3>${product.title || "Produkt"}</h3>
+        <p>Antal ${product.quantity}</p>
+        <p>Pris ${formatPrice(product.price)}</p>
+        <p>Totalt ${formatPrice(product.quantity * product.price)}</p>
       </div>
     `;
     checkoutContainer.appendChild(productElement);
   });
 
   const purchaseButton = document.createElement("button");
-  purchaseButton.textContent = "Purchase";
+  purchaseButton.textContent = "Genomför köp";
+  purchaseButton.type = "button";
   purchaseButton.classList.add("buy-btn");
+  purchaseButton.addEventListener("click", () => {
+    saveCart([]);
+    cart = [];
+    checkoutContainer.hidePopover();
+    popoverContainer.innerHTML = "";
+    renderCart();
+    showMessage("Tack! Demonstrationsköpet är klart.");
+  });
 
   const summaryPanel = document.createElement("div");
   summaryPanel.classList.add("checkout-summary-panel");
   summaryPanel.appendChild(purchaseButton);
   checkoutContainer.appendChild(summaryPanel);
 }
+
+checkoutButton.addEventListener("click", () => {
+  void createPopover();
+});
+renderCart();

@@ -1,5 +1,11 @@
+import {
+  getFavorites,
+  saveFavorites,
+  setUpNavigation,
+  updateNavigationCounts,
+} from "./js/api.js";
+import { getCart, saveCart } from "./storage.js";
 import { getStoredProducts } from "./storage.js";
-import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
 
 const productDetails = document.querySelector("#product-details");
 const API_URL = "https://dummyjson.com/products";
@@ -66,7 +72,50 @@ function renderProduct(product) {
   description.textContent = product.description;
 
   productInfo.append(title, category, description, price);
-  article.append(image, productInfo);
+
+  const actions = document.createElement("div");
+  actions.classList.add("product-actions");
+
+  const addToCartButton = document.createElement("button");
+  addToCartButton.type = "button";
+  addToCartButton.className = "button";
+  addToCartButton.textContent = "Lägg i varukorg";
+
+  const favoriteButton = document.createElement("button");
+  favoriteButton.type = "button";
+  favoriteButton.className = "favorite-button";
+  const isFavorite = getFavorites().includes(product.id);
+  favoriteButton.textContent = isFavorite ? "♥ Ta bort favorit" : "♡ Lägg till favorit";
+  favoriteButton.setAttribute("aria-pressed", String(isFavorite));
+
+  addToCartButton.addEventListener("click", () => {
+    const cart = getCart();
+    if (saveCart([...cart, product.id])) {
+      addToCartButton.textContent = "Tillagd i varukorg";
+      updateNavigationCounts();
+    } else {
+      errorMessage.textContent = "Det gick inte att spara varukorgen.";
+    }
+  });
+
+  favoriteButton.addEventListener("click", () => {
+    const favorites = getFavorites();
+    const alreadyFavorite = favorites.includes(product.id);
+    const updated = alreadyFavorite
+      ? favorites.filter((id) => id !== product.id)
+      : [...favorites, product.id];
+
+    if (saveFavorites(updated)) {
+      favoriteButton.textContent = alreadyFavorite
+        ? "♡ Lägg till favorit"
+        : "♥ Ta bort favorit";
+      favoriteButton.setAttribute("aria-pressed", String(!alreadyFavorite));
+      updateNavigationCounts();
+    }
+  });
+
+  actions.append(addToCartButton, favoriteButton);
+  article.append(image, productInfo, actions);
   productDetails.appendChild(article);
 }
 
