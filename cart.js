@@ -47,10 +47,20 @@ async function getCartProducts() {
   return products;
 }
 
+
+let messageTimeout;
+
 function showMessage(message) {
+  clearTimeout(messageTimeout);
+
   messageElement.textContent = message;
   messageElement.hidden = false;
+
+  messageTimeout = setTimeout(() => {
+    messageElement.hidden = true;
+  }, 3000);
 }
+
 
 async function renderCart() {
   cartElement.innerHTML = "";
