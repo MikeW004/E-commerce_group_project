@@ -49,8 +49,15 @@ async function getItems() {
 }
 
 
+
 async function getCategories() {
+  const categorySelect = document.querySelector("#category");
+
   try {
+    categorySelect.disabled = true;
+    categorySelect.innerHTML =
+      '<option value="">Laddar kategorier...</option>';
+
     const response = await fetch(`${API_URL}/categories`);
 
     if (!response.ok) {
@@ -59,18 +66,22 @@ async function getCategories() {
 
     const categories = await response.json();
 
-    const categorySelect = document.querySelector("#category");
+    categorySelect.innerHTML =
+      '<option value="">Välj kategori</option>';
 
     categories.forEach((category) => {
       const option = document.createElement("option");
-
       option.value = category.slug;
       option.textContent = category.name;
-
       categorySelect.appendChild(option);
     });
 
+    categorySelect.disabled = false;
+
   } catch (error) {
+    categorySelect.innerHTML =
+      '<option value="">Kunde inte hämta kategorier</option>';
+
     console.error(error);
   }
 }
@@ -415,5 +426,5 @@ productForm.appendChild(cancelButton);
 
 cancelButton.addEventListener("click", cancelEditing);
 
-getCategories()
+await getCategories();
 getItems();
