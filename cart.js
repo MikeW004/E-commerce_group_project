@@ -14,9 +14,17 @@ const totalPriceElement = document.querySelector("#summary-price");
 const checkoutButton = document.querySelector("#checkout-btn");
 const popoverContainer = document.querySelector("#checkout-popover-container");
 
+let messageTimeout;
+
 function showMessage(message) {
+  clearTimeout(messageTimeout);
+
   messageElement.textContent = message;
   messageElement.hidden = false;
+
+  messageTimeout = setTimeout(() => {
+    messageElement.hidden = true;
+  }, 3000);
 }
 // Hämtar id i varukorgslistan från browser, gör en ny lista utan dubbletter
 // hämtar produkt från minne eller api, lägger till .quantity m.h.a cart
@@ -59,20 +67,6 @@ async function getCartProducts() {
   }
 
   return products;
-}
-
-
-let messageTimeout;
-
-function showMessage(message) {
-  clearTimeout(messageTimeout);
-
-  messageElement.textContent = message;
-  messageElement.hidden = false;
-
-  messageTimeout = setTimeout(() => {
-    messageElement.hidden = true;
-  }, 3000);
 }
 
 
