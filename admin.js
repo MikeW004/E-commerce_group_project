@@ -1,9 +1,5 @@
+
 import { setUpNavigation, updateNavigationCounts } from "./js/api.js";
-import {
-  getStoredProducts,
-  hasStoredProducts,
-  saveStoredProducts
-} from "./storage.js";
 
 setUpNavigation("admin");
 updateNavigationCounts();
@@ -21,32 +17,26 @@ const saveButton = productForm.querySelector(
 
 const API_URL = "https://dummyjson.com/products";
 
-let allProducts = [];
 let editingProductId = null;
 let editingProductCard = null;
 let editingOriginalProduct = null;
 
 
+// GET - Hämta produkter
 
 async function getItems() {
   try {
     statusMessage.textContent = "Laddar produkter...";
 
-    if (hasStoredProducts()) {
-      allProducts = getStoredProducts();
-    } else {
-      const response = await fetch(`${API_URL}?limit=0`);
+    const response = await fetch(`${API_URL}?limit=12`);
 
-      if (!response.ok) {
-        throw new Error("Kunde inte hämta produkterna");
-      }
-
-      const data = await response.json();
-      allProducts = data.products;
-      saveStoredProducts(allProducts);
+    if (!response.ok) {
+      throw new Error("Kunde inte hämta produkterna");
     }
 
-    displayProducts(allProducts);
+    const data = await response.json();
+
+    displayProducts(data.products);
 
     statusMessage.textContent = "";
 
@@ -59,20 +49,99 @@ async function getItems() {
 }
 
 
+async function getCategories() {
+  try {
+    const response = await fetch(`${API_URL}/categories`);
+
+    if (!response.ok) {
+      throw new Error("Kunde inte hämta kategorier");
+    }
+
+    const categories = await response.json();
+
+    const categorySelect = document.querySelector("#category");
+
+    categories.forEach((category) => {
+      const option = document.createElement("option");
+
+      option.value = category.slug;
+      option.textContent = category.name;
+
+      categorySelect.appendChild(option);
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// POST - Skapa produkt
+
+async function createProduct(product) {
+  const response = await fetch(`${API_URL}/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(product)
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte skapa produkten");
+  }
+
+  return await response.json();
+}
+
+
+// PUT - Uppdatera produkt
+
+async function updateProduct(id, product) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(product)
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte uppdatera produkten");
+  }
+
+  return await response.json();
+}
+
+
+// DELETE - Ta bort produkt
+
+async function deleteProduct(id) {
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte ta bort produkten");
+  }
+
+  return await response.json();
+}
+
+
+// Skapa produktkort
 
 function createProductCard(product) {
   const productCard = document.createElement("div");
   productCard.classList.add("product-card");
 
   // Produktbild
-  
-    const image = document.createElement("img");
-    image.src = product.thumbnail;
-    image.alt = product.title;
-    image.classList.add("product-image");
+  const image = document.createElement("img");
+  image.src = product.thumbnail || "";
+  image.alt = product.title;
+  image.classList.add("product-image");
 
-    productCard.appendChild(image);
-  
+  productCard.appendChild(image);
+
   // Produktnamn
   const title = document.createElement("h3");
   title.textContent = product.title;
@@ -109,11 +178,20 @@ function createProductCard(product) {
     handleDelete(product, card, this);
   });
 
-  productCard.append(title,price,category,description,editButton,deleteButton);
+  productCard.append(
+    title,
+    price,
+    category,
+    description,
+    editButton,
+    deleteButton
+  );
 
   return productCard;
 }
 
+
+// Visa produkter
 
 function displayProducts(products) {
   productList.innerHTML = "";
@@ -125,7 +203,7 @@ function displayProducts(products) {
 }
 
 
-
+// Hämta information från formuläret
 
 function getFormData() {
   const priceInput = document.querySelector("#price").value.trim();
@@ -138,18 +216,9 @@ function getFormData() {
   };
 }
 
-function readImageAsDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => resolve(reader.result));
-    reader.addEventListener("error", () => reject(reader.error));
-    reader.readAsDataURL(file);
-  });
-}
-
-
 
 // Återställ formuläret till CREATE-läge
+
 function resetForm() {
   productForm.reset();
 
@@ -159,10 +228,13 @@ function resetForm() {
 
   saveButton.textContent = "Lägg till produkt";
   productSummary.textContent = "Lägg till produkt";
+
+  document.querySelector("#image-field").hidden = false;
 }
 
 
-// redigera en produkt
+// Redigera en produkt
+
 function startEditing(product, productCard) {
   editingProductId = product.id;
   editingProductCard = productCard;
@@ -173,6 +245,7 @@ function startEditing(product, productCard) {
   document.querySelector("#description").value =
     product.description || "";
   document.querySelector("#category").value = product.category;
+
   document.querySelector("#image-field").hidden = true;
 
   saveButton.textContent = "Spara ändringar";
@@ -198,9 +271,13 @@ async function handleSubmit(event) {
   event.preventDefault();
 
   const product = getFormData();
-  const imageFile = document.querySelector("#product-image").files[0];
 
-  if (!product.title || !product.category ||!Number.isFinite(product.price) ||product.price < 0) {
+  if (
+    !product.title ||
+    !product.category ||
+    !Number.isFinite(product.price) ||
+    product.price < 0
+  ) {
     statusMessage.textContent = "Kontrollera produktuppgifterna.";
     return;
   }
@@ -210,49 +287,60 @@ async function handleSubmit(event) {
   try {
     saveButton.disabled = true;
 
-    statusMessage.textContent = isEditing? "Uppdaterar produkt..." : "Sparar produkt...";
+    statusMessage.textContent = isEditing
+      ? "Uppdaterar produkt..."
+      : "Sparar produkt...";
 
     if (isEditing) {
+
+      // Lokalt skapade produkter finns inte hos API:et
+      const updatedProduct = editingOriginalProduct.isLocal
+        ? product
+        : await updateProduct(editingProductId, product);
+
       const completeProduct = {
         ...editingOriginalProduct,
-        ...product,
-        thumbnail: imageFile
-          ? await readImageAsDataUrl(imageFile)
-          : editingOriginalProduct.thumbnail
+        ...updatedProduct,
+        thumbnail: editingOriginalProduct.thumbnail
       };
 
-      allProducts = allProducts.map((item) =>
-        item.id === editingProductId ? completeProduct : item
-      );
-      saveStoredProducts(allProducts);
-      displayProducts(allProducts);
+      const newCard = createProductCard(completeProduct);
+
+      editingProductCard.replaceWith(newCard);
 
       statusMessage.textContent = "Produkten har uppdaterats.";
 
-    
     } else {
-    const completeProduct = {
-        ...product,
-        id: Math.max(0, ...allProducts.map((item) => Number(item.id) || 0)) + 1,
-        thumbnail: imageFile ? await readImageAsDataUrl(imageFile) : "",
+
+      const newProduct = await createProduct(product);
+
+      const imageInput = document.querySelector("#product-image");
+      const imageFile = imageInput.files[0];
+
+      const completeProduct = {
+        ...newProduct,
         isLocal: true
-    };
+      };
 
-    allProducts.unshift(completeProduct);
-    saveStoredProducts(allProducts);
-    displayProducts(allProducts);
+      // Om användaren har valt en bildfil
+      if (imageFile) {
+        completeProduct.thumbnail = URL.createObjectURL(imageFile);
+      }
 
-    statusMessage.textContent =
-        "Produkten har lagts till.";
+      const newCard = createProductCard(completeProduct);
+
+      productList.prepend(newCard);
+
+      statusMessage.textContent = "Produkten har lagts till.";
     }
-
 
     resetForm();
     productDetails.open = false;
-    document.querySelector("#image-field").hidden = false;
 
   } catch (error) {
-    statusMessage.textContent = isEditing ? "Det gick inte att uppdatera produkten." : "Det gick inte att lägga till produkten.";
+    statusMessage.textContent = isEditing
+      ? "Det gick inte att uppdatera produkten."
+      : "Det gick inte att lägga till produkten.";
 
     console.error(error);
 
@@ -262,8 +350,8 @@ async function handleSubmit(event) {
 }
 
 
-
 // Avbryt redigering
+
 function cancelEditing() {
   resetForm();
   productDetails.open = false;
@@ -271,6 +359,7 @@ function cancelEditing() {
 }
 
 
+// Hantera DELETE
 
 async function handleDelete(product, productCard, deleteButton) {
   const confirmed = confirm(
@@ -285,9 +374,13 @@ async function handleDelete(product, productCard, deleteButton) {
     deleteButton.disabled = true;
     statusMessage.textContent = "Tar bort produkt...";
 
-    allProducts = allProducts.filter((item) => item.id !== product.id);
-    saveStoredProducts(allProducts);
-    displayProducts(allProducts);
+    // Skicka bara DELETE om produkten finns hos API:et
+    if (!product.isLocal) {
+      await deleteProduct(product.id);
+    }
+
+    // Ta bort produktkortet från sidan
+    productCard.remove();
 
     // Återställ formuläret om vi redigerar denna produkt
     if (editingProductCard === productCard) {
@@ -295,12 +388,10 @@ async function handleDelete(product, productCard, deleteButton) {
       productDetails.open = false;
     }
 
-    statusMessage.textContent =
-      "Produkten har tagits bort.";
+    statusMessage.textContent = "Produkten har tagits bort.";
 
   } catch (error) {
-    statusMessage.textContent =
-      "Det gick inte att ta bort produkten.";
+    statusMessage.textContent = "Det gick inte att ta bort produkten.";
 
     console.error(error);
 
@@ -312,7 +403,9 @@ async function handleDelete(product, productCard, deleteButton) {
 
 productForm.addEventListener("submit", handleSubmit);
 
-//Avbryt-knapp
+
+// Avbryt-knapp
+
 const cancelButton = document.createElement("button");
 cancelButton.type = "button";
 cancelButton.textContent = "Avbryt";
@@ -322,5 +415,5 @@ productForm.appendChild(cancelButton);
 
 cancelButton.addEventListener("click", cancelEditing);
 
-
+getCategories()
 getItems();
