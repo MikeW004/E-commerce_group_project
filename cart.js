@@ -14,12 +14,25 @@ const totalPriceElement = document.querySelector("#summary-price");
 const checkoutButton = document.querySelector("#checkout-btn");
 const popoverContainer = document.querySelector("#checkout-popover-container");
 
+function showMessage(message) {
+  messageElement.textContent = message;
+  messageElement.hidden = false;
+}
+// Hämtar id i varukorgslistan från browser, gör en ny lista utan dubbletter
+// hämtar produkt från minne eller api, lägger till .quantity m.h.a cart
+// sparar alla produkter i en lista och returnar
 async function getCartProducts() {
   cart = getCart();
   const products = [];
   const storedProducts = getStoredProducts();
+ 
+  // konverterar varje id till string ifall de är olika data types
+  // sparar endast unika värden med new Set
+  // spread opertor gör om till array
   const uniqueProductIds = [...new Set(cart.map((id) => String(id)))];
-
+ 
+  //gör en ny key som heter quantity som är hur många av en unik produkt
+  //som finns i cart
   for (const id of uniqueProductIds) {
     const quantity = cart.filter((productId) => String(productId) === id).length;
     const storedProduct = storedProducts.find(
@@ -27,6 +40,7 @@ async function getCartProducts() {
     );
 
     if (storedProduct) {
+      //pushar nytt object med quantity i sig, skippar fetch
       products.push({ ...storedProduct, quantity });
       continue;
     }
@@ -62,6 +76,7 @@ function showMessage(message) {
 }
 
 
+//tar varje produkt från produktlista, skapar ett kort och lägger till html
 async function renderCart() {
   cartElement.innerHTML = "";
   totalCartPrice = 0;
@@ -87,7 +102,7 @@ async function renderCart() {
   totalProductsElement.textContent = String(cart.length);
   totalPriceElement.textContent = formatPrice(totalCartPrice);
 }
-
+//skapar ett kort för varje produkt
 function createCartCard(product) {
   const productTotal = product.price * product.quantity;
   totalCartPrice += productTotal;
@@ -117,7 +132,8 @@ function createCartCard(product) {
   attachQuantityControls(cardElement, product);
   return cardElement;
 }
-
+//Lägger till evenlistener på varje kort som lägger till/tar bort produkt
+//uppdaterar summary
 function attachQuantityControls(cardElement, product) {
   const quantityElement = cardElement.querySelector(".quantity");
   const productTotalElement = cardElement.querySelector(".product-total-price");
@@ -150,28 +166,20 @@ function attachQuantityControls(cardElement, product) {
     renderSummary();
   });
 }
-
+//Summary av antal produkter och totala priset
 function renderSummary() {
   cart = getCart();
   totalCartPrice = 0;
 
-  cartElement.querySelectorAll(".cart-card").forEach((card) => {
-    const quantity = Number(card.querySelector(".quantity")?.textContent || 0);
-    const totalText = card.querySelector(".card-price")?.textContent || "";
-    void quantity;
-    void totalText;
-  });
-
   getCartProducts().then((products) => {
-    totalCartPrice = products.reduce(
-      (sum, product) => sum + product.price * product.quantity,
+    totalCartPrice = products.reduce((sum, product) => sum + product.price * product.quantity,
       0,
     );
     totalPriceElement.textContent = formatPrice(totalCartPrice);
     totalProductsElement.textContent = String(cart.length);
   });
 }
-
+//skapar popover element i sin container med alla produkter i varukorgen
 async function createPopover() {
   if (getCart().length === 0) {
     showMessage("Din varukorg är tom.");
@@ -191,7 +199,7 @@ async function createPopover() {
     showMessage("Kunde inte öppna kassan. Försök igen.");
   }
 }
-
+//fyller i popover med alla produkter i varukorgen
 async function renderCheckoutProducts(checkoutContainer) {
   const products = await getCartProducts();
 
@@ -233,8 +241,9 @@ async function renderCheckoutProducts(checkoutContainer) {
   summaryPanel.appendChild(purchaseButton);
   checkoutContainer.appendChild(summaryPanel);
 }
-
+//knappen som öppnar popover
 checkoutButton.addEventListener("click", () => {
   void createPopover();
 });
+
 renderCart();
